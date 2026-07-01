@@ -1,0 +1,86 @@
+
+> cafe-website@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+  - Environments: .env.local, .env.production
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/31) ...
+Creating MySQL connection pool...
+✅ MySQL connection pool created
+Creating MySQL connection pool...
+✅ MySQL connection pool created
+Error fetching dashboard stats: ReferenceError: connectToDatabase is not defined
+    at p (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\.next\server\app\api\stats\route.js:1:1480)
+    at C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854)
+    at C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\server\lib\trace\tracer.js:122:103
+    at NoopContextManager.with (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+   Generating static pages (7/31) 
+Creating MySQL connection pool...
+✅ MySQL connection pool created
+❌ Error fetching dashboard stats: ReferenceError: count is not defined
+    at Object.countAvailableItems (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\.next\server\app\api\menu\route.js:9:3364)
+    at p (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\.next\server\app\api\dashboard\stats\route.js:1:1532)
+    at C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854)
+    at C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\server\lib\trace\tracer.js:122:103
+    at NoopContextManager.with (C:\Users\rasa0\OneDrive\Desktop\cafe\New folder\cafe-website\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+   Generating static pages (15/31) 
+   Generating static pages (23/31) 
+ ✓ Generating static pages (31/31)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    5.81 kB         155 kB
+├ ○ /_not-found                          880 B          88.3 kB
+├ ○ /about                               4.69 kB         126 kB
+├ ○ /admin                               2.84 kB         162 kB
+├ ○ /admin/dashboard                     26.7 kB         184 kB
+├ ○ /admin/gallery                       6.13 kB         184 kB
+├ ○ /admin/menu                          8.46 kB         189 kB
+├ ○ /admin/messages                      2.84 kB         178 kB
+├ ○ /admin/notifications                 4.83 kB         174 kB
+├ ○ /admin/settings                      2.79 kB         171 kB
+├ ƒ /api/admin/login                     0 B                0 B
+├ ƒ /api/admin/logout                    0 B                0 B
+├ ƒ /api/admin/menu                      0 B                0 B
+├ ƒ /api/admin/notifications             0 B                0 B
+├ ƒ /api/admin/upload                    0 B                0 B
+├ ƒ /api/admin/verify                    0 B                0 B
+├ ƒ /api/contact                         0 B                0 B
+├ ○ /api/dashboard/full-stats            0 B                0 B
+├ ○ /api/dashboard/stats                 0 B                0 B
+├ ○ /api/db-health                       0 B                0 B
+├ ƒ /api/db-status                       0 B                0 B
+├ ƒ /api/gallery                         0 B                0 B
+├ ƒ /api/menu                            0 B                0 B
+├ ○ /api/settings                        0 B                0 B
+├ ƒ /api/stats                           0 B                0 B
+├ ○ /contact                             4.82 kB         169 kB
+├ ○ /gallery                             4.42 kB         150 kB
+├ ○ /menu                                15 kB           200 kB
+└ ○ /order                               2.31 kB         167 kB
++ First Load JS shared by all            87.4 kB
+  ├ chunks/2117-c12c243833d16d21.js      31.9 kB
+  ├ chunks/fd9d1056-fadceeee7cac105d.js  53.6 kB
+  └ other shared chunks (total)          1.9 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
