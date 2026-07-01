@@ -1,36 +1,38 @@
-// cafe-website/src/app/api/db-status/route.js
-import { NextResponse } from 'next/server'
-import MenuItem from '@/models/menuModel'
-import MenuCategory from '@/models/menuCategoryModel'
-import ContactMessage from '@/models/contactModel'
-import Notification from '@/models/notificationModel'
+import { NextResponse } from 'next/server';
+import { testConnection, query } from '@/lib/mysql';
+import menuModel from '@/models/menuModel';
+import menuCategoryModel from '@/models/menuCategoryModel';
+import contactModel from '@/models/contactModel';
+import notificationModel from '@/models/notificationModel';
 
 export async function GET() {
   try {
-    await connectToDatabase()
-    
-    // Get counts from all collections
-    const [
-      menuItemsCount,
-      categoriesCount,
-      messagesCount,
-      notificationsCount
-    ] = await Promise.all([
-      MenuItem.countDocuments(),
-      MenuCategory.countDocuments(),
-      ContactMessage.countDocuments(),
-      Notification.countDocuments()
-    ])
-    
-    // Get database info
-    const db = mongoose.connection.db
-    const collections = await db.listCollections().toArray()
-    
+    const connected = await testConnection();
+
+    if (!connected) {
+      return NextResponse.json({
+        success: false,
+        database: 'MySQL',
+        status: 'Disconnected',
+        error: 'Could not connect to MySQL',
+        help: 'Check if MySQL is running and .env.local credentials are correct'
+      }, { status: 500 });
+    }
+
+    const [tablesResult, menuItemsCount, categoriesCount, messagesCount, notificationsCount] =
+      await Promise.all([
+        query('SHOW TABLES'),
+        menuModel.countAvailableItems(),
+        menuCategoryModel.countActiveCategories(),
+        contactModel.countContactMessages(),
+        notificationModel.countUnreadNotifications()
+      ]);
+
     return NextResponse.json({
       success: true,
-      database: 'MongoDB',
+      database: 'MySQL',
       status: 'Connected',
-      collections: collections.map(c => c.name),
+      tables: tablesResult.map((row) => Object.values(row)[0]),
       statistics: {
         menuItems: menuItemsCount,
         categories: categoriesCount,
@@ -38,15 +40,14 @@ export async function GET() {
         notifications: notificationsCount
       },
       timestamp: new Date().toISOString()
-    })
-    
+    });
   } catch (error) {
     return NextResponse.json({
       success: false,
-      database: 'MongoDB',
+      database: 'MySQL',
       status: 'Disconnected',
       error: error.message,
-      help: 'Check if MongoDB is running and MONGODB_URI is correct'
-    }, { status: 500 })
+      help: 'Check if MySQL is running and MYSQL_* values in .env.local are correct'
+    }, { status: 500 });
   }
 }

@@ -1,6 +1,5 @@
 // src/models/menuModel.js - MySQL-based Menu Items Data Access Layer
-import { query, queryOne, insert, update, remove } from '@/lib/mysql';
-
+import { query, queryOne, insert, update, remove, count } from '@/lib/mysql';
 // Table name
 const TABLE = 'menu_items';
 

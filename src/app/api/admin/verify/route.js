@@ -1,84 +1,53 @@
-// cafe-website/src/app/api/admin/logout/route.js
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
 
-export async function POST(request) {
+const JWT_SECRET = process.env.JWT_SECRET || 'caribou-cafe-jwt-secret-2024';
+
+function getToken(request) {
+  const authHeader = request.headers.get('authorization');
+  if (authHeader?.startsWith('Bearer ')) {
+    return authHeader.replace('Bearer ', '');
+  }
+  return request.cookies.get('adminToken')?.value || null;
+}
+
+export async function GET(request) {
   try {
-    console.log('👋 Logout endpoint called')
-    
-    // Check if user was authenticated
-    const token = request.cookies.get('adminToken')?.value
-    if (token) {
-      try {
-        const JWT_SECRET = process.env.JWT_SECRET || 'caribou-cafe-jwt-secret-2024'
-        const jwt = await import('jsonwebtoken')
-        const decoded = jwt.verify(token, JWT_SECRET)
-        console.log(`👤 User ${decoded.username} logged out`)
-      } catch (e) {
-        console.log('ℹ️ Invalid token during logout (expected)')
-      }
-    }
-    
-    const response = NextResponse.json({
-      success: true,
-      message: 'با موفقیت خارج شدید',
-      timestamp: new Date().toISOString()
-    })
-    
-    // Clear all auth cookies with proper settings
-    const cookieOptions = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-    }
-    
-    // Clear adminToken
-    response.cookies.set({
-      ...cookieOptions,
-      name: 'adminToken',
-      value: '',
-      expires: new Date(0),
-    })
-    
-    // Clear adminAuth
-    response.cookies.set({
-      ...cookieOptions,
-      name: 'adminAuth',
-      value: '',
-      expires: new Date(0),
-      httpOnly: false,
-    })
-    
-    // Clear lastLogin
-    response.cookies.set({
-      ...cookieOptions,
-      name: 'lastLogin',
-      value: '',
-      expires: new Date(0),
-      httpOnly: false,
-    })
-    
-    // Clear any other related cookies
-    response.cookies.set({
-      ...cookieOptions,
-      name: 'session',
-      value: '',
-      expires: new Date(0),
-    })
-    
-    console.log('✅ Logout successful')
-    return response
+    const token = getToken(request);
 
+    if (!token) {
+      return NextResponse.json(
+        { success: false, authenticated: false, error: 'توکن یافت نشد' },
+        { status: 401 }
+      );
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    if (decoded.role !== 'admin') {
+      return NextResponse.json(
+        { success: false, authenticated: false, error: 'دسترسی غیرمجاز' },
+        { status: 403 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      authenticated: true,
+      user: {
+        username: decoded.username,
+        role: decoded.role
+      },
+      expiresAt: decoded.exp ? new Date(decoded.exp * 1000).toISOString() : null
+    });
   } catch (error) {
-    console.error('💥 Logout error:', error)
     return NextResponse.json(
-      { success: false, error: 'خطا در خروج' },
-      { status: 500 }
-    )
+      { success: false, authenticated: false, error: 'توکن نامعتبر یا منقضی شده' },
+      { status: 401 }
+    );
   }
 }
 
-// Also handle GET requests for convenience
-export async function GET(request) {
-  return POST(request)
+export async function POST(request) {
+  return GET(request);
 }

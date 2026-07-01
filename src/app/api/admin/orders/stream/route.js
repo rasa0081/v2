@@ -1,9 +1,35 @@
-// src/app/api/admin/orders/stream/route.js — SSE for real-time order updates
+import jwt from 'jsonwebtoken';
 import orderModel from '@/models/orderModel';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+const JWT_SECRET = process.env.JWT_SECRET || 'caribou-cafe-jwt-secret-2024';
+
+function verifyAdmin(request) {
+  try {
+    const authHeader = request.headers.get('authorization');
+    const cookieToken = request.cookies.get('adminToken')?.value;
+    const token = authHeader?.startsWith('Bearer ')
+      ? authHeader.replace('Bearer ', '')
+      : cookieToken;
+
+    if (!token) return false;
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    return decoded.role === 'admin';
+  } catch {
+    return false;
+  }
+}
+
+export async function GET(request) {
+  if (!verifyAdmin(request)) {
+    return new Response(
+      JSON.stringify({ success: false, error: 'دسترسی غیرمجاز' }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
@@ -18,14 +44,12 @@ export async function GET() {
         try {
           const stats = await orderModel.getOrderStats();
           const orders = await orderModel.getAllOrders({ limit: 20 });
-
-          // Send update if order count changed or first load
           const currentCount = stats.total;
+
           if (lastOrderCount === null || currentCount !== lastOrderCount) {
             lastOrderCount = currentCount;
             sendEvent({ type: 'orders_update', stats, orders });
           } else {
-            // Still send a heartbeat with stats
             sendEvent({ type: 'heartbeat', stats });
           }
         } catch (error) {
@@ -34,29 +58,24 @@ export async function GET() {
         }
       };
 
-      // Initial data
       await poll();
-
-      // Poll every 3 seconds
       const interval = setInterval(poll, 3000);
 
-      // Cleanup when client disconnects
-      const cleanup = () => {
+      setTimeout(() => {
         clearInterval(interval);
-        try { controller.close(); } catch {}
-      };
-
-      // Auto-close after 5 minutes to prevent resource leaks
-      setTimeout(cleanup, 5 * 60 * 1000);
-    },
+        try {
+          controller.close();
+        } catch {}
+      }, 5 * 60 * 1000);
+    }
   });
 
   return new Response(stream, {
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache, no-transform',
-      'Connection': 'keep-alive',
-      'X-Accel-Buffering': 'no',
-    },
+      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no'
+    }
   });
 }

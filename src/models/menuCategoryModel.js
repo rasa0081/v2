@@ -1,6 +1,5 @@
 // src/models/menuCategoryModel.js - MySQL-based Menu Categories Data Access Layer
-import { query, queryOne, insert, update, remove } from '@/lib/mysql';
-
+import { query, queryOne, insert, update, remove, count } from '@/lib/mysql';
 const TABLE = 'menu_categories';
 
 /**
@@ -77,7 +76,7 @@ export async function updateCategory(categoryId, data) {
 
   if (Object.keys(updateData).length === 0) return 0;
 
-  return await update(updateData, 'category_id = ?', [categoryId]);
+  return await update(TABLE, updateData, 'category_id = ?', [categoryId]);
 }
 
 /**
